@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YWAM Ensenada 2026 — Fundraising Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sand: #F5EFE4; --sand-dark: #EDE4D4; --clay: #C4714A; --clay-light: #E89070; --clay-pale: #F9EDE5;
+    --navy: #1A2B47; --navy-mid: #2D4468; --teal: #3B7D6E; --teal-light: #E4F0EE;
+    --gold: #D4A84B; --gold-pale: #FBF3E0; --red-soft: #D95F4B; --red-pale: #FDECEA;
+    --text: #1A2B47; --text-mid: #4A5C75; --text-light: #8A9BB5; --white: #FFFFFF;
+    --radius: 16px; --shadow: 0 4px 24px rgba(26,43,71,0.10); --shadow-hover: 0 12px 40px rgba(26,43,71,0.18);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'DM Sans',sans-serif;background:var(--sand);color:var(--text);min-height:100vh}
+  header{background:var(--navy);padding:48px 40px 40px;text-align:center;position:relative;overflow:hidden}
+  header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,rgba(196,113,74,0.25) 0%,transparent 65%),radial-gradient(ellipse at 20% 80%,rgba(59,125,110,0.2) 0%,transparent 55%);pointer-events:none}
+  .header-eyebrow{font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--clay-light);margin-bottom:12px;position:relative}
+  header h1{font-family:'Playfair Display',serif;font-size:clamp(28px,5vw,48px);font-weight:700;color:var(--white);line-height:1.15;position:relative}
+  .header-verse{margin-top:12px;font-size:13px;font-weight:300;color:rgba(255,255,255,0.55);font-style:italic;position:relative}
+  .header-meta{display:flex;justify-content:center;gap:32px;margin-top:32px;flex-wrap:wrap;position:relative}
+  .meta-pill{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:40px;padding:8px 20px;font-size:13px;font-weight:500;color:rgba(255,255,255,0.8)}
+  .meta-pill strong{color:var(--white)}
+  .summary-strip{background:var(--white);border-bottom:1px solid var(--sand-dark);padding:20px 40px;display:flex;justify-content:center;flex-wrap:wrap}
+  .sum-stat{text-align:center;padding:4px 36px;border-right:1px solid var(--sand-dark)}
+  .sum-stat:last-child{border-right:none}
+  .sum-val{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--navy);line-height:1}
+  .sum-val.green{color:var(--teal)}.sum-val.clay{color:var(--clay)}
+  .sum-label{font-size:11px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-light);margin-top:4px}
+  .controls{padding:24px 40px 8px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;max-width:1400px;margin:0 auto}
+  .search-wrap{position:relative;flex:1;min-width:200px;max-width:320px}
+  .search-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-light)}
+  .search-input{width:100%;padding:10px 14px 10px 38px;border:1.5px solid var(--sand-dark);border-radius:10px;font-family:inherit;font-size:14px;background:var(--white);color:var(--text);outline:none;transition:border-color .2s}
+  .search-input:focus{border-color:var(--clay)}
+  .filter-btns{display:flex;gap:8px;flex-wrap:wrap}
+  .filter-btn{padding:9px 16px;border:1.5px solid var(--sand-dark);border-radius:10px;font-family:inherit;font-size:13px;font-weight:500;background:var(--white);color:var(--text-mid);cursor:pointer;transition:all .2s}
+  .filter-btn:hover{border-color:var(--clay);color:var(--clay)}
+  .filter-btn.active{background:var(--clay);color:var(--white);border-color:var(--clay)}
+  .sort-select{padding:9px 28px 9px 14px;border:1.5px solid var(--sand-dark);border-radius:10px;font-family:inherit;font-size:13px;font-weight:500;background:var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238A9BB5' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 10px center;color:var(--text-mid);cursor:pointer;outline:none;appearance:none}
+  .grid-wrap{padding:16px 40px 60px;max-width:1400px;margin:0 auto}
+  .section-label{font-size:11px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--text-light);margin:20px 0 12px;padding-left:2px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+  .card{background:var(--white);border-radius:var(--radius);padding:22px;cursor:pointer;transition:transform .22s cubic-bezier(.34,1.56,.64,1),box-shadow .22s;box-shadow:var(--shadow);border:1.5px solid transparent;position:relative;overflow:hidden}
+  .card:hover{transform:translateY(-4px);box-shadow:var(--shadow-hover);border-color:var(--clay-light)}
+  .card.funded{border-color:rgba(59,125,110,0.3);background:linear-gradient(135deg,#fff 70%,var(--teal-light))}
+  .card.overfunded{border-color:rgba(212,168,75,0.4);background:linear-gradient(135deg,#fff 70%,var(--gold-pale))}
+  .card.team-fund{border:2px dashed var(--gold);background:linear-gradient(135deg,#fff 60%,var(--gold-pale))}
+  .card.team-fund:hover{border-style:solid}
+  .card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
+  .avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--white);flex-shrink:0}
+  .badges{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+  .status-badge{font-size:11px;font-weight:600;letter-spacing:.5px;padding:4px 10px;border-radius:20px}
+  .badge-funded{background:var(--teal-light);color:var(--teal)}
+  .badge-overfunded{background:var(--gold-pale);color:#A07820}
+  .badge-partial{background:var(--clay-pale);color:var(--clay)}
+  .badge-none{background:var(--red-pale);color:var(--red-soft)}
+  .badge-staff{background:rgba(59,125,110,0.12);color:var(--teal)}
+  .badge-teamfund{background:rgba(212,168,75,0.15);color:#8A6010}
+  .card-name{font-family:'Playfair Display',serif;font-size:18px;font-weight:600;color:var(--navy);line-height:1.2}
+  .card-role{font-size:12px;color:var(--text-light);margin-top:2px}
+  .prog-wrap{margin:14px 0 12px}
+  .prog-track{height:6px;background:var(--sand-dark);border-radius:99px;overflow:hidden}
+  .prog-fill{height:100%;border-radius:99px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+  .prog-nums{display:flex;justify-content:space-between;font-size:12px;color:var(--text-light);margin-top:6px}
+  .prog-nums strong{color:var(--text)}
+  .card-amounts{display:flex;gap:10px;margin-top:12px}
+  .amount-box{flex:1;background:var(--sand);border-radius:10px;padding:8px 10px;text-align:center}
+  .amount-box .val{font-size:15px;font-weight:600;font-family:'Playfair Display',serif}
+  .amount-box .lbl{font-size:10px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--text-light);margin-top:1px}
+  .owed-box .val{color:var(--red-soft)}.raised-box .val{color:var(--teal)}
+  .card-donor-count{font-size:12px;color:var(--text-light);margin-top:10px;display:flex;align-items:center;gap:5px}
+  .card-cta{font-size:12px;font-weight:600;color:var(--clay);margin-top:6px}
+  .ribbon{position:absolute;top:14px;right:-28px;color:white;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:4px 36px;transform:rotate(45deg)}
+  .ribbon-teal{background:var(--teal)}.ribbon-gold{background:var(--gold);color:var(--navy)}
+  .no-results{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--text-light);font-size:15px}
+  .modal-overlay{position:fixed;inset:0;background:rgba(10,20,40,0.55);backdrop-filter:blur(6px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .25s}
+  .modal-overlay.open{opacity:1;pointer-events:all}
+  .modal{background:var(--white);border-radius:24px;width:100%;max-width:520px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(10,20,40,0.35);transform:translateY(24px) scale(.97);transition:transform .3s cubic-bezier(.34,1.4,.64,1);overflow:hidden}
+  .modal-overlay.open .modal{transform:translateY(0) scale(1)}
+  .modal-header{padding:28px 28px 20px;display:flex;align-items:flex-start;gap:16px;border-bottom:1px solid var(--sand-dark);flex-shrink:0}
+  .modal-avatar{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:white;flex-shrink:0}
+  .modal-name{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--navy);line-height:1.2}
+  .modal-role{font-size:13px;color:var(--text-light);margin-top:3px}
+  .modal-close{margin-left:auto;background:var(--sand);border:none;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--text-mid);transition:background .2s;flex-shrink:0}
+  .modal-close:hover{background:var(--sand-dark)}
+  .modal-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--sand-dark);flex-shrink:0}
+  .mstat{background:var(--white);padding:16px;text-align:center}
+  .mstat-val{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--navy);line-height:1}
+  .mstat-val.green{color:var(--teal)}.mstat-val.red{color:var(--red-soft)}.mstat-val.gold{color:var(--gold)}
+  .mstat-lbl{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text-light);margin-top:4px}
+  .modal-prog-wrap{padding:16px 28px;flex-shrink:0}
+  .modal-prog-track{height:10px;background:var(--sand-dark);border-radius:99px;overflow:hidden}
+  .modal-prog-fill{height:100%;border-radius:99px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+  .modal-prog-pct{text-align:right;font-size:12px;font-weight:600;margin-top:6px;color:var(--text-mid)}
+  .modal-body{padding:0 28px 28px;overflow-y:auto;flex:1}
+  .donors-title{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-light);margin:18px 0 12px;display:flex;align-items:center;gap:8px}
+  .donors-title::after{content:'';flex:1;height:1px;background:var(--sand-dark)}
+  .no-donors{background:var(--sand);border-radius:12px;padding:24px;text-align:center;color:var(--text-light);font-size:14px}
+  .donor-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--sand);animation:fadeUp .3s ease both}
+  .donor-row:last-child{border-bottom:none}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  .donor-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;color:white}
+  .donor-info{flex:1;min-width:0}
+  .donor-name{font-size:14px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .donor-source{font-size:11px;color:var(--text-light);margin-top:1px}
+  .donor-amount{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;flex-shrink:0}
+  .donor-bar-wrap{margin-top:4px}.donor-bar{height:3px;background:var(--sand-dark);border-radius:99px;overflow:hidden}
+  .donor-bar-fill{height:100%;border-radius:99px;opacity:.5}
+  .src-reg{background:rgba(26,43,71,0.08);color:var(--navy-mid)}
+  .src-contrib{background:var(--teal-light);color:var(--teal)}
+  .src-spaghetti{background:var(--clay-pale);color:var(--clay)}
+  .src-housebuild{background:rgba(212,168,75,0.15);color:#8A6010}
+  .src-general{background:rgba(212,168,75,0.25);color:#7A5010}
+  .src-overflow{background:rgba(59,125,110,0.12);color:var(--teal)}
+  @media(max-width:640px){
+    header{padding:32px 20px 28px}.summary-strip{padding:14px 20px}.sum-stat{padding:4px 14px}
+    .controls{padding:16px 20px 8px}.grid-wrap{padding:12px 20px 40px}
+    .modal{border-radius:20px 20px 0 0;align-self:flex-end;max-width:100%}.modal-overlay{align-items:flex-end;padding:0}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="header-eyebrow">Cornerstone Fellowship · June 16–23, 2026</div>
+  <h1>YWAM Ensenada 2026<br>Fundraising Tracker</h1>
+  <div class="header-verse">"Serve one another in love." — Galatians 5:13b</div>
+  <div class="header-meta">
+    <div class="meta-pill">📍 <strong>Ensenada, Baja California</strong></div>
+    <div class="meta-pill">🏠 <strong>Home Build Mission</strong></div>
+    <div class="meta-pill">🎯 <strong>$1,800</strong> per person</div>
+  </div>
+</header>
+
+<div class="summary-strip">
+  <div class="sum-stat"><div class="sum-val" id="stat-total-people">—</div><div class="sum-label">Students</div></div>
+  <div class="sum-stat"><div class="sum-val green" id="stat-total-raised">—</div><div class="sum-label">Total Raised</div></div>
+  <div class="sum-stat"><div class="sum-val clay" id="stat-total-owed">—</div><div class="sum-label">Still Needed</div></div>
+  <div class="sum-stat"><div class="sum-val" id="stat-fully-funded">—</div><div class="sum-label">Fully Funded</div></div>
+  <div class="sum-stat"><div class="sum-val" id="stat-pct">—</div><div class="sum-label">Overall Progress</div></div>
+</div>
+
+<div class="controls">
+  <div class="search-wrap">
+    <svg width="15" height="15" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.8"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <input class="search-input" type="text" placeholder="Search by name…" id="searchInput" oninput="render()">
+  </div>
+  <div class="filter-btns">
+    <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+    <button class="filter-btn" onclick="setFilter('funded',this)">✅ Funded</button>
+    <button class="filter-btn" onclick="setFilter('partial',this)">🔶 In Progress</button>
+    <button class="filter-btn" onclick="setFilter('none',this)">⚪ Not Started</button>
+  </div>
+  <select class="sort-select" id="sortSelect" onchange="render()">
+    <option value="name">Sort: Name</option>
+    <option value="raised-desc">Sort: Most Raised</option>
+    <option value="raised-asc">Sort: Least Raised</option>
+    <option value="pct-desc">Sort: % Complete</option>
+    <option value="owed-desc">Sort: Most Owed</option>
+  </select>
+</div>
+
+<div class="grid-wrap" id="gridWrap"></div>
+
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-avatar" id="mAvatar"></div>
+      <div><div class="modal-name" id="mName"></div><div class="modal-role" id="mRole"></div></div>
+      <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    </div>
+    <div class="modal-stats">
+      <div class="mstat"><div class="mstat-val" id="mRaised"></div><div class="mstat-lbl">Raised</div></div>
+      <div class="mstat"><div class="mstat-val red" id="mOwed"></div><div class="mstat-lbl">Still Needed</div></div>
+      <div class="mstat"><div class="mstat-val" id="mDonors"></div><div class="mstat-lbl">Donors</div></div>
+    </div>
+    <div class="modal-prog-wrap">
+      <div class="modal-prog-track"><div class="modal-prog-fill" id="mProgFill"></div></div>
+      <div class="modal-prog-pct" id="mProgPct"></div>
+    </div>
+    <div class="modal-body" id="mBody"></div>
+  </div>
+</div>
+
+<script>
+const TRIP_COST = 1800;
+
+const TEAM_FUND = {
+  totalRaised: 350,
+  donors: [
+    {name:"Chip Anderson",amount:100,source:"Registration Deposit"},
+    {name:"Kerri Anderson",amount:100,source:"Registration Deposit"},
+    {name:"Martin Ticas",amount:100,source:"House Build Contribution"},
+    {name:"Edith Davis",amount:50,source:"House Build Contribution"}
+  ]
+};
+
+const PEOPLE = [{"id":57069,"firstName":"Chelsie","lastName":"Anderson","role":"Staff","totalRaised":1800,"tripCost":1800,"balanceOwed":0,"donors":[{"name":"Staff \u2014 Fully Covered","amount":1800,"source":"Registration Deposit"}]},{"id":119951,"firstName":"Howard","lastName":"Lee","role":"Staff","totalRaised":1800,"tripCost":1800,"balanceOwed":0,"donors":[{"name":"Staff \u2014 Fully Covered","amount":1800,"source":"Registration Deposit"}]},{"id":78867,"firstName":"Trevor","lastName":"Stripling","role":"Staff","totalRaised":1800,"tripCost":1800,"balanceOwed":0,"donors":[{"name":"Staff \u2014 Fully Covered","amount":1800,"source":"Registration Deposit"}]},{"id":100625,"firstName":"Raevynn","lastName":"Anderson","role":"Member","totalRaised":2120.0,"tripCost":1800,"balanceOwed":0,"donors":[{"name":"April Axelrod","amount":300.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"alex gonzalez","amount":200.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"Howard Lee","amount":100.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"Linda Mahoney","amount":100.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"Erin Gorham","amount":100.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"Kathi Hileman","amount":100.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"Sally Faddis","amount":100.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"Kent/Heather Anderson","amount":100.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"Nancy Eleazarraraz","amount":100.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"Sarah Woolsey","amount":100.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"Chad Anderson","amount":100.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"Raylene & Kevin Anderson","amount":100.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"fiona xie","amount":85.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"Alyssa Melton","amount":75.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"Rick Hansen","amount":50.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"Leisa Elliott","amount":50.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"Raegan Anderson","amount":50.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"Naomi Monschein","amount":50.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"Cristina Pena","amount":40.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"Chelsie Anderson","amount":30.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"Ruthie Gawel","amount":25.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"April ORNELAS","amount":25.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"Amy Cofer","amount":25.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"Chelsie Anderson","amount":20.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"Matthew Wilson","amount":20.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"Dana Ra","amount":20.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"Jackie Davis","amount":20.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"Aaron Garcia","amount":15.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"Samantha Clay","amount":10.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"Garrett Fitch","amount":10.0,"source":"Spaghetti Dinner / Gift Event"}]},{"id":58929,"firstName":"Dane","lastName":"Cimino","role":"Member","totalRaised":100,"tripCost":1800,"balanceOwed":1700,"donors":[{"name":"Dane Cimino (self)","amount":100,"source":"Registration Deposit"}]},{"id":61952,"firstName":"Giselle","lastName":"Davis","role":"Member","totalRaised":400.0,"tripCost":1800,"balanceOwed":1400.0,"donors":[{"name":"Mark Brown","amount":200.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"Giselle Davis (self)","amount":100,"source":"Registration Deposit"},{"name":"Mark Turner","amount":100.0,"source":"Spaghetti Dinner / Gift Event"}]},{"id":97539,"firstName":"Sage","lastName":"Dawe","role":"Member","totalRaised":100,"tripCost":1800,"balanceOwed":1700,"donors":[{"name":"Sage Dawe (self)","amount":100,"source":"Registration Deposit"}]},{"id":14599,"firstName":"Bella","lastName":"Flores","role":"Member","totalRaised":1435.0,"tripCost":1800,"balanceOwed":365.0,"donors":[{"name":"David Youd","amount":1000.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"Kathryn Segura","amount":250.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"Isabella Flores (self)","amount":100,"source":"Registration Deposit"},{"name":"Sarah Carter","amount":60.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"Rodney Pschier","amount":25.0,"source":"Spaghetti Dinner / Gift Event"}]},{"id":106127,"firstName":"Harry","lastName":"Gacias","role":"Member","totalRaised":100,"tripCost":1800,"balanceOwed":1700,"donors":[{"name":"Harry Gacias (self)","amount":100,"source":"Registration Deposit"}]},{"id":20736,"firstName":"Adam","lastName":"Gleeson","role":"Member","totalRaised":100,"tripCost":1800,"balanceOwed":1700,"donors":[{"name":"Adam Gleeson (self)","amount":100,"source":"Registration Deposit"}]},{"id":20735,"firstName":"Matthew","lastName":"Gleeson","role":"Member","totalRaised":100,"tripCost":1800,"balanceOwed":1700,"donors":[{"name":"Matthew Gleeson (self)","amount":100,"source":"Registration Deposit"}]},{"id":120118,"firstName":"Sita","lastName":"Goldstein","role":"Member","totalRaised":100,"tripCost":1800,"balanceOwed":1700,"donors":[{"name":"Sita Goldstein (self)","amount":100,"source":"Registration Deposit"}]},{"id":81186,"firstName":"Eli","lastName":"Gorham","role":"Member","totalRaised":100,"tripCost":1800,"balanceOwed":1700,"donors":[{"name":"Eli Gorham (self)","amount":100,"source":"Registration Deposit"}]},{"id":81185,"firstName":"Noah","lastName":"Gorham","role":"Member","totalRaised":100,"tripCost":1800,"balanceOwed":1700,"donors":[{"name":"Noah Gorham (self)","amount":100,"source":"Registration Deposit"}]},{"id":15698,"firstName":"Catherine","lastName":"Johnson","role":"Member","totalRaised":100,"tripCost":1800,"balanceOwed":1700,"donors":[{"name":"Catherine Johnson (self)","amount":100,"source":"Registration Deposit"}]},{"id":119221,"firstName":"Tesiah","lastName":"Law","role":"Member","totalRaised":100,"tripCost":1800,"balanceOwed":1700,"donors":[{"name":"Tessa Law (self)","amount":100,"source":"Registration Deposit"}]},{"id":118767,"firstName":"Keoni","lastName":"Lee","role":"Member","totalRaised":0,"tripCost":1800,"balanceOwed":1800,"donors":[]},{"id":119470,"firstName":"Samantha","lastName":"Liu","role":"Member","totalRaised":100,"tripCost":1800,"balanceOwed":1700,"donors":[{"name":"Samantha Liu (self)","amount":100,"source":"Registration Deposit"}]},{"id":118091,"firstName":"Seth","lastName":"Liu","role":"Member","totalRaised":100,"tripCost":1800,"balanceOwed":1700,"donors":[{"name":"Seth Liu (self)","amount":100,"source":"Registration Deposit"}]},{"id":118412,"firstName":"Aliz","lastName":"Lundbom","role":"Member","totalRaised":1800.0,"tripCost":1800,"balanceOwed":0,"donors":[{"name":"Aliz Lundbom","amount":950.0,"source":"Fundraising Contribution"},{"name":"Patrick Lundbom","amount":400.0,"source":"Fundraising Contribution"},{"name":"Ilona Voloscsuk","amount":150.0,"source":"Fundraising Contribution"},{"name":"Aliz (on behalf of JP Genoud)","amount":150.0,"source":"Fundraising Contribution"},{"name":"Aliz Lundbom (self)","amount":100,"source":"Registration Deposit"},{"name":"Aliz Lundbom","amount":50.0,"source":"Fundraising Contribution"}]},{"id":120302,"firstName":"Taylor","lastName":"Madu","role":"Member","totalRaised":100,"tripCost":1800,"balanceOwed":1700,"donors":[{"name":"Taylor Madu (self)","amount":100,"source":"Registration Deposit"}]},{"id":93114,"firstName":"Lucca","lastName":"Marin","role":"Member","totalRaised":100,"tripCost":1800,"balanceOwed":1700,"donors":[{"name":"Lucca Marin (self)","amount":100,"source":"Registration Deposit"}]},{"id":93115,"firstName":"Niccolo","lastName":"Marin","role":"Member","totalRaised":100,"tripCost":1800,"balanceOwed":1700,"donors":[{"name":"Niccolo Marin (self)","amount":100,"source":"Registration Deposit"}]},{"id":120293,"firstName":"Sofia Ann","lastName":"Morgia","role":"Member","totalRaised":990.0,"tripCost":1800,"balanceOwed":810.0,"donors":[{"name":"Aliz Lundbom","amount":495.0,"source":"Fundraising Contribution"},{"name":"Chris Morgia","amount":200.0,"source":"Fundraising Contribution"},{"name":"Sam Morgia (self)","amount":100,"source":"Registration Deposit"},{"name":"Edith Davis","amount":100.0,"source":"Fundraising Contribution"},{"name":"Leslie Esquivel","amount":75.0,"source":"Fundraising Contribution"},{"name":"Aj Malaca","amount":10.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"Eric Ra","amount":10.0,"source":"Spaghetti Dinner / Gift Event"}]},{"id":48356,"firstName":"Jaden","lastName":"Ng","role":"Member","totalRaised":100,"tripCost":1800,"balanceOwed":1700,"donors":[{"name":"Jaden Ng (self)","amount":100,"source":"Registration Deposit"}]},{"id":79735,"firstName":"William","lastName":"Sharland","role":"Member","totalRaised":100,"tripCost":1800,"balanceOwed":1700,"donors":[{"name":"William Sharland (self)","amount":100,"source":"Registration Deposit"}]},{"id":113790,"firstName":"Scarlett","lastName":"Silz","role":"Member","totalRaised":0,"tripCost":1800,"balanceOwed":1800,"donors":[]},{"id":120092,"firstName":"Rebekah","lastName":"Spencer","role":"Member","totalRaised":100,"tripCost":1800,"balanceOwed":1700,"donors":[{"name":"Rebekah Spencer (self)","amount":100,"source":"Registration Deposit"}]},{"id":120301,"firstName":"Eva Rachel","lastName":"Thomas","role":"Member","totalRaised":100,"tripCost":1800,"balanceOwed":1700,"donors":[{"name":"Eva Thomas (self)","amount":100,"source":"Registration Deposit"}]},{"id":117111,"firstName":"Lucia","lastName":"Ticas","role":"Member","totalRaised":200.0,"tripCost":1800,"balanceOwed":1600.0,"donors":[{"name":"Lucia Ticas (self)","amount":100,"source":"Registration Deposit"},{"name":"Martin Ticas","amount":100.0,"source":"Fundraising Contribution"}]},{"id":106430,"firstName":"Martin","lastName":"Ticas","role":"Member","totalRaised":100.0,"tripCost":1800,"balanceOwed":1700.0,"donors":[{"name":"Martin Ticas","amount":100.0,"source":"Fundraising Contribution"}]},{"id":116273,"firstName":"John","lastName":"Trainer","role":"Member","totalRaised":100,"tripCost":1800,"balanceOwed":1700,"donors":[{"name":"John Trainer (self)","amount":100,"source":"Registration Deposit"}]},{"id":3120,"firstName":"Audrey","lastName":"Watts","role":"Member","totalRaised":870.0,"tripCost":1800,"balanceOwed":930.0,"donors":[{"name":"Valerie Watts","amount":500.0,"source":"Fundraising Contribution"},{"name":"Audrey Watts (self)","amount":100,"source":"Registration Deposit"},{"name":"James Watts","amount":100.0,"source":"Fundraising Contribution"},{"name":"Ted Nakamura","amount":50.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"Cindy Matteoni","amount":50.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"Eric Totman","amount":50.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"Becky Fitch","amount":20.0,"source":"Spaghetti Dinner / Gift Event"}]},{"id":3117,"firstName":"Daniel","lastName":"Watts","role":"Member","totalRaised":100,"tripCost":1800,"balanceOwed":1700,"donors":[{"name":"Daniel Watts (self)","amount":100,"source":"Registration Deposit"}]},{"id":3119,"firstName":"Sydney","lastName":"Watts","role":"Member","totalRaised":1070.0,"tripCost":1800,"balanceOwed":730.0,"donors":[{"name":"Val Watts","amount":500.0,"source":"Fundraising Contribution"},{"name":"Jan La Torre-Derby","amount":200.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"Sydney Watts (self)","amount":100,"source":"Registration Deposit"},{"name":"James Watts","amount":100.0,"source":"Fundraising Contribution"},{"name":"Ted Nakamura","amount":50.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"Cindy Matteoni","amount":50.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"Eric Totman","amount":50.0,"source":"Spaghetti Dinner / Gift Event"},{"name":"Becky Fitch","amount":20.0,"source":"Spaghetti Dinner / Gift Event"}]},{"id":52980,"firstName":"Allison","lastName":"Wong","role":"Member","totalRaised":100,"tripCost":1800,"balanceOwed":1700,"donors":[{"name":"Allison Wong (self)","amount":100,"source":"Registration Deposit"}]}];
+
+const PALETTE=['#C4714A','#3B7D6E','#2D4468','#D4A84B','#7B5EA7','#4A8AB5','#B85E7A','#6B8E4E'];
+function getColor(n){let h=0;for(let c of n)h=(h*31+c.charCodeAt(0))&0xFFFF;return PALETTE[h%PALETTE.length]}
+function initials(p){const w=(p.firstName+' '+p.lastName).split(' ').filter(Boolean);return(w[0][0]+(w[1]?.[0]||'')).toUpperCase()}
+function fmt(n){return'$'+Math.round(n).toLocaleString()}
+function pct(p){return Math.min(100,Math.round(p.totalRaised/TRIP_COST*100))}
+function statusOf(p){
+  if(p.role==='Staff')return'funded';
+  if(p.totalRaised>=TRIP_COST*1.01)return'overfunded';
+  if(p.totalRaised>=TRIP_COST)return'funded';
+  if(p.totalRaised===0)return'none';
+  return'partial';
+}
+function progColor(p){
+  const s=statusOf(p);
+  if(s==='overfunded')return'#D4A84B';
+  if(s==='funded')return'#3B7D6E';
+  if(s==='none')return'#D0D8E4';
+  const v=pct(p);
+  return v<15?'#D95F4B':v<50?'#E89070':'#C4714A';
+}
+function sourceTag(s){
+  if(s==='Registration Deposit')return'<span class="donor-source src-reg">📋 Registration Deposit</span>';
+  if(s==='Fundraising Contribution')return'<span class="donor-source src-contrib">💝 Direct Contribution</span>';
+  if(s==='House Build Contribution')return'<span class="donor-source src-housebuild">🔨 House Build Fund</span>';
+  if(s==='General Fund Donation')return'<span class="donor-source src-general">🌟 General Fund</span>';
+  if(s==='Overflow — Exceeded Goal')return'<span class="donor-source src-overflow">➡️ Transferred Overflow</span>';
+  return'<span class="donor-source src-spaghetti">🍝 Spaghetti Dinner / Gift Event</span>';
+}
+
+let currentFilter='all';
+function setFilter(f,btn){currentFilter=f;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');render()}
+
+function renderDonorList(donors,body,accent){
+  if(!donors.length){body.innerHTML+='<div class="no-donors">No donations recorded yet.</div>';return}
+  const max=Math.max(...donors.map(d=>d.amount));
+  donors.forEach((d,i)=>{
+    const row=document.createElement('div');row.className='donor-row';row.style.animationDelay=(i*.04)+'s';
+    const dc=getColor(d.name),di=d.name.split(' ').filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+    row.innerHTML=`<div class="donor-icon" style="background:${dc}">${di}</div>
+      <div class="donor-info"><div class="donor-name">${d.name}</div>${sourceTag(d.source)}
+      <div class="donor-bar-wrap"><div class="donor-bar"><div class="donor-bar-fill" style="width:${Math.round(d.amount/max*100)}%;background:${accent};opacity:.5"></div></div></div></div>
+      <div class="donor-amount" style="color:${accent}">${fmt(d.amount)}</div>`;
+    body.appendChild(row);
+  });
+  const tr=document.createElement('div');
+  tr.style.cssText='padding:14px 0 0;display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:14px;color:var(--text-mid);border-top:2px solid var(--sand-dark);margin-top:4px';
+  tr.innerHTML=`<span>Total from ${donors.length} donor${donors.length!==1?'s':''}</span><span style="font-family:Playfair Display,serif;font-size:18px;color:${accent}">${fmt(donors.reduce((s,d)=>s+d.amount,0))}</span>`;
+  body.appendChild(tr);
+}
+
+function openModal(p){
+  const c=getColor(p.firstName+p.lastName),pv=Math.min(100,Math.round(p.totalRaised/TRIP_COST*100)),pc=progColor(p);
+  document.getElementById('mAvatar').style.background=c;
+  document.getElementById('mAvatar').textContent=initials(p);
+  document.getElementById('mName').textContent=p.firstName+' '+p.lastName;
+  document.getElementById('mRole').textContent=p.role+(p.role==='Staff'?' · ✅ Fully Covered':p.totalRaised>TRIP_COST?' · ⭐ Over Goal!':p.totalRaised>=TRIP_COST?' · ✅ Fully Funded!':'');
+  const mr=document.getElementById('mRaised');mr.textContent=fmt(p.totalRaised);mr.className='mstat-val green';
+  document.getElementById('mOwed').textContent=p.balanceOwed>0?fmt(p.balanceOwed):'—';
+  document.getElementById('mDonors').textContent=p.donors.length;
+  const fill=document.getElementById('mProgFill');fill.style.background=pc;fill.style.width='0%';
+  document.getElementById('mProgPct').textContent=p.totalRaised>TRIP_COST?`${pv}% — ${fmt(p.totalRaised-TRIP_COST)} over goal! 🎉`:`${pv}% of ${fmt(TRIP_COST)} goal`;
+  const body=document.getElementById('mBody');body.innerHTML='';
+  const t=document.createElement('div');t.className='donors-title';t.textContent='Donor Breakdown';body.appendChild(t);
+  renderDonorList(p.donors,body,pc);
+  document.getElementById('modalOverlay').classList.add('open');document.body.style.overflow='hidden';
+  setTimeout(()=>{fill.style.width=pv+'%'},80);
+}
+
+function openTeamFundModal(){
+  document.getElementById('mAvatar').style.background='#D4A84B';
+  document.getElementById('mAvatar').textContent='🏠';
+  document.getElementById('mName').textContent='General Team Fund';
+  document.getElementById('mRole').textContent='Overflow & undesignated gifts · shared pool';
+  const mr=document.getElementById('mRaised');mr.textContent=fmt(TEAM_FUND.totalRaised);mr.className='mstat-val gold';
+  document.getElementById('mOwed').textContent='—';
+  document.getElementById('mDonors').textContent=TEAM_FUND.donors.length;
+  const fill=document.getElementById('mProgFill');fill.style.background='#D4A84B';fill.style.width='0%';
+  document.getElementById('mProgPct').textContent=`${fmt(TEAM_FUND.totalRaised)} collected · no fixed goal`;
+  const body=document.getElementById('mBody');body.innerHTML='';
+  const t=document.createElement('div');t.className='donors-title';t.textContent='Contributors';body.appendChild(t);
+  renderDonorList(TEAM_FUND.donors,body,'#D4A84B');
+  document.getElementById('modalOverlay').classList.add('open');document.body.style.overflow='hidden';
+  setTimeout(()=>{fill.style.width='100%'},80);
+}
+
+function closeModal(e){if(e.target===document.getElementById('modalOverlay'))closeModalDirect()}
+function closeModalDirect(){document.getElementById('modalOverlay').classList.remove('open');document.getElementById('mProgFill').style.width='0%';document.body.style.overflow=''}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModalDirect()});
+
+function updateStats(){
+  const totalRaised=PEOPLE.reduce((s,p)=>s+p.totalRaised,0)+TEAM_FUND.totalRaised;
+  const students=PEOPLE.filter(p=>p.role!=='Staff');
+  const totalOwed=students.reduce((s,p)=>s+p.balanceOwed,0);
+  const fullyFunded=PEOPLE.filter(p=>p.totalRaised>=TRIP_COST).length;
+  const pct=Math.round(totalRaised/(PEOPLE.length*TRIP_COST)*100);
+  document.getElementById('stat-total-people').textContent=students.length;
+  document.getElementById('stat-total-raised').textContent='$'+Math.round(totalRaised).toLocaleString();
+  document.getElementById('stat-total-owed').textContent='$'+Math.round(totalOwed).toLocaleString();
+  document.getElementById('stat-fully-funded').textContent=fullyFunded;
+  document.getElementById('stat-pct').textContent=pct+'%';
+}
+
+function render(){
+  const q=document.getElementById('searchInput').value.toLowerCase().trim();
+  const sort=document.getElementById('sortSelect').value;
+  let list=[...PEOPLE];
+  if(currentFilter!=='all')list=list.filter(p=>{
+    const s=statusOf(p);
+    if(currentFilter==='funded')return s==='funded'||s==='overfunded';
+    if(currentFilter==='partial')return s==='partial';
+    if(currentFilter==='none')return s==='none';
+    return true;
+  });
+  if(q)list=list.filter(p=>(p.firstName+' '+p.lastName).toLowerCase().includes(q)||p.donors.some(d=>d.name.toLowerCase().includes(q)));
+  if(sort==='name')list.sort((a,b)=>a.lastName.localeCompare(b.lastName));
+  else if(sort==='raised-desc')list.sort((a,b)=>b.totalRaised-a.totalRaised);
+  else if(sort==='raised-asc')list.sort((a,b)=>a.totalRaised-b.totalRaised);
+  else if(sort==='pct-desc')list.sort((a,b)=>pct(b)-pct(a));
+  else if(sort==='owed-desc')list.sort((a,b)=>b.balanceOwed-a.balanceOwed);
+
+  const staff=list.filter(p=>p.role==='Staff'),members=list.filter(p=>p.role!=='Staff');
+  const wrap=document.getElementById('gridWrap');wrap.innerHTML='';
+
+  // Team Fund
+  const tfShow=currentFilter==='all'&&(!q||'general team fund'.includes(q)||TEAM_FUND.donors.some(d=>d.name.toLowerCase().includes(q)));
+  if(tfShow){
+    const lbl=document.createElement('div');lbl.className='section-label';lbl.textContent='Team Fund';wrap.appendChild(lbl);
+    const grid=document.createElement('div');grid.className='grid';
+    const card=document.createElement('div');card.className='card team-fund';
+    card.innerHTML=`<div class="card-top"><div class="avatar" style="background:#D4A84B;font-size:22px">🏠</div><span class="status-badge badge-teamfund">General Fund</span></div>
+      <div class="card-name">General Team Fund</div>
+      <div class="card-role">Overflow &amp; undesignated gifts · shared pool</div>
+      <div class="card-amounts" style="margin-top:16px">
+        <div class="amount-box raised-box"><div class="val">${fmt(TEAM_FUND.totalRaised)}</div><div class="lbl">Collected</div></div>
+        <div class="amount-box" style="background:var(--gold-pale)"><div class="val" style="color:#8A6010">${TEAM_FUND.donors.length}</div><div class="lbl">Contributors</div></div>
+      </div>
+      <div class="card-donor-count" style="margin-top:12px"><svg width="13" height="13" viewBox="0 0 20 20" fill="none"><circle cx="8" cy="7" r="3.5" stroke="#8A9BB5" stroke-width="1.6"/><path d="M2 17c0-3.3 2.7-6 6-6h4c3.3 0 6 2.7 6 6" stroke="#8A9BB5" stroke-width="1.6" stroke-linecap="round"/></svg>${TEAM_FUND.donors.length} contributors</div>
+      <div class="card-cta">View breakdown →</div>`;
+    card.onclick=()=>openTeamFundModal();
+    grid.appendChild(card);wrap.appendChild(grid);
+  }
+
+  function renderGroup(grp,label){
+    if(!grp.length)return;
+    const lbl=document.createElement('div');lbl.className='section-label';lbl.textContent=`${label} (${grp.length})`;wrap.appendChild(lbl);
+    const grid=document.createElement('div');grid.className='grid';
+    grp.forEach(p=>{
+      const s=statusOf(p),pv=pct(p),col=getColor(p.firstName+p.lastName),pc=progColor(p);
+      let bh='';
+      if(s==='overfunded')bh='<span class="status-badge badge-overfunded">⭐ Over Goal</span>';
+      else if(s==='funded')bh='<span class="status-badge badge-funded">✅ Funded</span>';
+      else if(s==='none')bh='<span class="status-badge badge-none">Not Started</span>';
+      else bh=`<span class="status-badge badge-partial">${pv}%</span>`;
+      if(p.role==='Staff')bh+=`<span class="status-badge badge-staff" style="margin-top:2px">Staff</span>`;
+      let rh='';
+      if(s==='overfunded')rh='<div class="ribbon ribbon-gold">Over Goal</div>';
+      else if(s==='funded')rh='<div class="ribbon ribbon-teal">Funded ✓</div>';
+      const card=document.createElement('div');
+      card.className=`card${s==='funded'?' funded':s==='overfunded'?' overfunded':''}`;
+      card.innerHTML=`${rh}
+        <div class="card-top"><div class="avatar" style="background:${col}">${initials(p)}</div><div class="badges">${bh}</div></div>
+        <div class="card-name">${p.firstName} ${p.lastName}</div>
+        <div class="card-role">${p.role}</div>
+        <div class="prog-wrap"><div class="prog-track"><div class="prog-fill" style="width:${pv}%;background:${pc}"></div></div>
+        <div class="prog-nums"><span><strong>${fmt(p.totalRaised)}</strong> raised</span><span>${fmt(TRIP_COST)} goal</span></div></div>
+        <div class="card-amounts">
+          <div class="amount-box raised-box"><div class="val">${fmt(p.totalRaised)}</div><div class="lbl">Raised</div></div>
+          <div class="amount-box owed-box"><div class="val">${p.balanceOwed>0?fmt(p.balanceOwed):'—'}</div><div class="lbl">Needed</div></div>
+        </div>
+        <div class="card-donor-count"><svg width="13" height="13" viewBox="0 0 20 20" fill="none"><circle cx="8" cy="7" r="3.5" stroke="#8A9BB5" stroke-width="1.6"/><path d="M2 17c0-3.3 2.7-6 6-6h4c3.3 0 6 2.7 6 6" stroke="#8A9BB5" stroke-width="1.6" stroke-linecap="round"/></svg>${p.donors.length} donor${p.donors.length!==1?'s':''}</div>
+        <div class="card-cta">View donor breakdown →</div>`;
+      card.onclick=()=>openModal(p);
+      grid.appendChild(card);
+    });
+    wrap.appendChild(grid);
+  }
+
+  if(staff.length)renderGroup(staff,'Staff');
+  if(members.length)renderGroup(members,'Students & Team Members');
+  if(!staff.length&&!members.length&&!tfShow)wrap.innerHTML='<div class="grid"><div class="no-results">No results found.</div></div>';
+}
+
+// Move student overflow into team fund
+PEOPLE.forEach(p => {
+  if (p.role === 'Staff') return;
+  const overflow = p.totalRaised - TRIP_COST;
+  if (overflow > 0) {
+    TEAM_FUND.donors.push({
+      name: `${p.firstName} ${p.lastName} (overflow)`,
+      amount: overflow,
+      source: 'Overflow — Exceeded Goal'
+    });
+    TEAM_FUND.totalRaised += overflow;
+    p.totalRaised = TRIP_COST;   // cap display at goal
+    p.balanceOwed = 0;
+  }
+});
+
+updateStats();render();
+</script>
+</body>
+</html>
