@@ -197,7 +197,6 @@ function buildSummary(){
   const totalRaised = students.reduce((s,p)=>s+p.totalRaised,0);
   const totalGoal = students.length*GOAL;
   const funded = students.filter(p=>p.totalRaised>=GOAL).length;
-  const tfTotal = TEAM_FUND.totalRaised;
   const strip = document.getElementById('summaryStrip');
   strip.innerHTML = `
     <div class="sum-stat"><div class="val">${students.length}</div><div class="lbl">Students</div></div>
@@ -206,7 +205,6 @@ function buildSummary(){
     <div class="sum-stat"><div class="val">${fmt(totalGoal-totalRaised)}</div><div class="lbl">Still Needed</div></div>
     <div class="sum-stat"><div class="val">${funded}</div><div class="lbl">Fully Funded</div></div>
     <div class="sum-stat"><div class="val">${Math.round(totalRaised/totalGoal*100)}%</div><div class="lbl">Overall</div></div>
-    <div class="sum-stat"><div class="val">${fmt(tfTotal)}</div><div class="lbl">Team Fund</div></div>
   `;
 }
 
