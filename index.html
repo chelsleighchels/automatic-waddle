@@ -79,10 +79,24 @@ header h1{font-family:'Playfair Display',serif;font-size:clamp(24px,4vw,40px);co
 .donor-count{font-size:11px;color:var(--text-light)}
 .funded-badge{display:inline-flex;align-items:center;gap:4px;background:#C6F6D5;color:#276749;font-size:11px;font-weight:700;border-radius:20px;padding:3px 10px;margin-bottom:6px}
 .card-actions{display:flex;gap:8px;padding:10px 16px 14px}
-.btn-donors{flex:1;padding:9px 12px;border-radius:9px;border:1.5px solid #E2E8F0;background:var(--white);color:var(--text-mid);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;text-align:center}
+.btn-donors{flex:1;padding:9px 12px;border-radius:9px;border:1.5px solid #E2E8F0;background:var(--white);color:var(--text-mid);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;text-align:center;display:flex;align-items:center;justify-content:center;gap:5px}
 .btn-donors:hover{border-color:var(--navy);color:var(--navy)}
+.btn-donors.open{background:var(--navy);color:var(--white);border-color:var(--navy)}
 .btn-give{flex:1;padding:9px 12px;border-radius:9px;border:none;color:var(--white);font-size:12px;font-weight:700;cursor:pointer;text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center;gap:5px;transition:opacity .2s}
 .btn-give:hover{opacity:.85}
+/* Donor dropdown */
+.donor-dropdown{display:none;border-top:1px solid #F0F0F0;background:var(--white);max-height:280px;overflow-y:auto}
+.donor-dropdown.open{display:block}
+.dd-header{display:flex;justify-content:space-between;padding:8px 14px 4px;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-light);border-bottom:1px solid #F0F0F0}
+.dd-row{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;border-bottom:1px solid #FAFAFA;gap:8px}
+.dd-row:last-child{border-bottom:none}
+.dd-row.campus-fund{background:#FFFBE0}
+.dd-name{font-size:12px;color:var(--text);font-weight:500;flex:1;min-width:0}
+.dd-source{font-size:10px;color:var(--text-light);margin-top:1px}
+.dd-right{display:flex;flex-direction:column;align-items:flex-end;gap:1px;flex-shrink:0}
+.dd-amt{font-size:12px;font-weight:700;color:var(--navy)}
+.dd-date{font-size:10px;color:var(--text-light)}
+.dd-empty{padding:12px 14px;font-size:12px;color:var(--text-light);font-style:italic}
 
 /* Staff row */
 .staff-section{margin:20px 40px 0}
@@ -151,27 +165,6 @@ header h1{font-family:'Playfair Display',serif;font-size:clamp(24px,4vw,40px);co
   </div>
 </div>
 
-<div class="overlay" id="overlay" onclick="closeModal(event)">
-  <div class="modal" id="modal">
-    <div class="modal-header">
-      <div class="modal-avatar" id="mAvatar"></div>
-      <div>
-        <div class="modal-name" id="mName"></div>
-        <div class="modal-campus-tag" id="mCampus"></div>
-      </div>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-    <div class="modal-progress">
-      <div class="modal-prog-row">
-        <div class="modal-raised" id="mRaised"></div>
-        <div class="modal-goal" id="mGoal"></div>
-      </div>
-      <div class="modal-prog-track"><div class="modal-prog-fill" id="mProgFill"></div></div>
-    </div>
-    <div class="modal-donors" id="mDonors"></div>
-    <a href="https://cornerstonefellowship.ccbchurch.com/goto/forms/4597/responses/new" target="_blank" class="modal-give-btn" id="mGiveBtn">💛 Give to this student</a>
-  </div>
-</div>
 
 <script>
 const GOAL = 1800;
@@ -217,6 +210,33 @@ function buildSummary(){
   `;
 }
 
+function buildDonorDropdown(p){
+  const donors = p.donors.filter(d=>d.name!=='Staff — Fully Covered');
+  if(!donors.length) return '<div class="dd-empty">No donations recorded yet.</div>';
+  return `<div class="dd-header"><span>Donor</span><span>Amount · Date</span></div>`+
+    donors.map(d=>{
+      const isCF = d.source==='Campus Overflow Distribution';
+      return `<div class="dd-row${isCF?' campus-fund':''}">
+        <div>
+          <div class="dd-name">${isCF?'♻️ ':''}${d.name}</div>
+          <div class="dd-source">${d.source}</div>
+        </div>
+        <div class="dd-right">
+          <div class="dd-amt">$${d.amount.toLocaleString('en',{minimumFractionDigits:0,maximumFractionDigits:2})}</div>
+          ${d.date?`<div class="dd-date">${d.date}</div>`:''}
+        </div>
+      </div>`;
+    }).join('');
+}
+
+function toggleDonors(id){
+  const dd = document.getElementById('dd-'+id);
+  const btn = document.getElementById('btn-'+id);
+  const isOpen = dd.classList.toggle('open');
+  btn.classList.toggle('open', isOpen);
+  btn.innerHTML = isOpen ? '▲ Hide Donors' : '▼ View Donors';
+}
+
 function buildCard(p){
   const funded = p.totalRaised >= GOAL;
   const color = campusColor(p.campus);
@@ -244,9 +264,10 @@ function buildCard(p){
       <div class="donor-count">🫶 ${donors.length} donor${donors.length!==1?'s':''}</div>
     </div>
     <div class="card-actions">
-      <button class="btn-donors" onclick="openModal(${p.id})">View Donors →</button>
+      <button class="btn-donors" id="btn-${p.id}" onclick="toggleDonors(${p.id})">▼ View Donors</button>
       <a href="${DONATE_URL}" target="_blank" class="btn-give" style="background:${color}">💛 Give</a>
     </div>
+    <div class="donor-dropdown" id="dd-${p.id}">${buildDonorDropdown(p)}</div>
   </div>`;
 }
 
@@ -328,47 +349,7 @@ function buildTeamFund(){
     </div>`).join('');
 }
 
-function openModal(id){
-  const p = PEOPLE.find(x=>x.id===id);
-  if(!p) return;
-  const color = campusColor(p.campus);
-  const aColor = avatarColor(p.id);
-  const funded = p.totalRaised>=GOAL;
-  document.getElementById('mAvatar').style.background = aColor;
-  document.getElementById('mAvatar').textContent = initials(p);
-  document.getElementById('mName').textContent = p.firstName+' '+p.lastName;
-  document.getElementById('mCampus').textContent = CAMPUS_INFO[p.campus]?.label+' Campus';
-  document.getElementById('mRaised').textContent = fmt(p.totalRaised)+' raised';
-  document.getElementById('mGoal').textContent = (funded?'✅ Fully Funded!':fmt(p.balanceOwed)+' still needed');
-  document.getElementById('mProgFill').style.width = pct(p.totalRaised)+'%';
-  document.getElementById('mProgFill').style.background = color;
-  document.getElementById('mGiveBtn').style.background = color;
-  
-  const donors = p.donors.filter(d=>d.name!=='Staff — Fully Covered');
-  if(!donors.length){
-    document.getElementById('mDonors').innerHTML = '<div class="no-donors">No donations recorded yet.</div>';
-  } else {
-    document.getElementById('mDonors').innerHTML = donors.map(d=>{
-      const isCampusFund = d.source==='Campus Overflow Distribution';
-      return `<div class="donor-row ${isCampusFund?'campus-fund-row':''}">
-        <div class="donor-left">
-          <div class="donor-name">${isCampusFund?'♻️ ':''}${d.name}</div>
-          <div class="donor-source">${d.source}</div>
-        </div>
-        <div class="donor-right">
-          <div class="donor-amt">+${d.amount.toLocaleString('en',{minimumFractionDigits:0,maximumFractionDigits:2})}</div>
-          ${d.date?`<div class="donor-date">${d.date}</div>`:''}
-        </div>
-      </div>`;
-    }).join('')
-  }
-  document.getElementById('overlay').classList.add('open');
-}
 
-function closeModal(e){
-  if(!e||e.target===document.getElementById('overlay'))
-    document.getElementById('overlay').classList.remove('open');
-}
 
 function filterCards(){
   currentSearch = document.getElementById('searchInput').value.toLowerCase();
