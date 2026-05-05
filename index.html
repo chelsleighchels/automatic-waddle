@@ -10,7 +10,7 @@
 :root{
   --coral:#D880AA;--coral-light:#FAE8F2;--coral-dark:#9A4A7A;
   --sky:#38C4E7;--sky-light:#D8F4FC;--sky-dark:#1A90B0;
-  --gold:#FFF601;--gold-light:#FFFBE0;--gold-dark:#2A2200;
+  --gold:#218A9B;--gold-light:#D6EEF2;--gold-dark:#0F5060;
   --blush:#FADCE8;--blush-pale:#FDE7C2;
   --navy:#1A2B47;--navy-mid:#2D4468;
   --white:#FFFFFF;--text:#2D3748;--text-mid:#4A5568;--text-light:#718096;
@@ -90,7 +90,7 @@ header h1{font-family:'Playfair Display',serif;font-size:clamp(24px,4vw,40px);co
 .dd-header{display:flex;justify-content:space-between;padding:8px 14px 4px;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-light);border-bottom:1px solid #F0F0F0}
 .dd-row{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;border-bottom:1px solid #FAFAFA;gap:8px}
 .dd-row:last-child{border-bottom:none}
-.dd-row.campus-fund{background:#FFFBE0}
+.dd-row.campus-fund{background:#D6EEF2}
 .dd-name{font-size:12px;color:var(--text);font-weight:500;flex:1;min-width:0}
 .dd-source{font-size:10px;color:var(--text-light);margin-top:1px}
 .dd-right{display:flex;flex-direction:column;align-items:flex-end;gap:1px;flex-shrink:0}
@@ -176,12 +176,12 @@ const TEAM_FUND = {
   ],
   totalRaised: 1800
 };
-const CAMPUS_INFO = {"livermore": {"label": "Livermore", "color": "#D880AA", "light": "#FAE8F2", "text": "#9A4A7A"}, "sanramon": {"label": "San Ramon", "color": "#38C4E7", "light": "#D8F4FC", "text": "#1A90B0"}, "walnutcreek": {"label": "Walnut Creek", "color": "#FFF601", "light": "#FFFBE0", "text": "#7A6A00"}};
+const CAMPUS_INFO = {"livermore": {"label": "Livermore", "color": "#D880AA", "light": "#FAE8F2", "text": "#9A4A7A"}, "sanramon": {"label": "San Ramon", "color": "#38C4E7", "light": "#D8F4FC", "text": "#1A90B0"}, "walnutcreek": {"label": "Walnut Creek", "color": "#218A9B", "light": "#D6EEF2", "text": "#0F5060"}};
 
 const STAFF_IDS = new Set([57069,119951,78867]);
 const CAMPUS_ORDER = ['livermore','sanramon','walnutcreek'];
 const CAMPUS_CSS = {livermore:'camp-lv',sanramon:'camp-sr',walnutcreek:'camp-wc'};
-const AVATAR_COLORS = ['#D880AA','#38C4E7','#FFF601','#9B72C0','#D87890','#5AA0C8','#5AACAC','#D0A050'];
+const AVATAR_COLORS = ['#D880AA','#38C4E7','#218A9B','#9B72C0','#D87890','#5AA0C8','#5AACAC','#D0A050'];
 
 let currentFilter = 'all';
 let currentSearch = '';
@@ -298,7 +298,7 @@ function buildCampusSections(){
     const funded = students.filter(p=>p.totalRaised>=GOAL).length;
     const pctVal = Math.round(raised/goal*100);
     const cssKey = CAMPUS_CSS[key];
-    const isDark = key==='walnutcreek';
+    const isDark = false;
     const tc = isDark?'var(--navy)':'var(--white)';
     
     // Check if there's an overflow pool for this campus
