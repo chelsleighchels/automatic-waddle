@@ -188,7 +188,7 @@ let currentSearch = '';
 
 function initials(p){return (p.firstName[0]+(p.lastName[0]||'')).toUpperCase()}
 function avatarColor(id){return AVATAR_COLORS[Math.abs(id)%AVATAR_COLORS.length]}
-function fmt(n){return '$'+Math.round(n).toLocaleString()}
+function fmt(n){return '$'+Number(n).toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})}
 function pct(raised){return Math.min(100,Math.round(raised/GOAL*100))}
 function campusColor(c){return CAMPUS_INFO[c]?.color||'#38C4E7'}
 
@@ -220,7 +220,7 @@ function buildDonorDropdown(p){
           <div class="dd-source">${d.source}</div>
         </div>
         <div class="dd-right">
-          <div class="dd-amt">$${d.amount.toLocaleString('en',{minimumFractionDigits:0,maximumFractionDigits:2})}</div>
+          <div class="dd-amt">$${d.amount.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
           ${d.date?`<div class="dd-date">${d.date}</div>`:''}
         </div>
       </div>`;
@@ -341,7 +341,7 @@ function buildTeamFund(){
     <div class="fund-row">
       <div class="fund-row-name">${d.name} <span style="font-size:10px;color:var(--text-light)">· ${d.source}</span></div>
       <div class="fund-row-right">
-        <div class="fund-row-amt">${d.amount.toLocaleString('en',{minimumFractionDigits:0,maximumFractionDigits:2})}</div>
+        <div class="fund-row-amt">${d.amount.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
         ${d.date?`<div class="fund-row-date">${d.date}</div>`:''}
       </div>
     </div>`).join('');
