@@ -55,6 +55,7 @@ header h1{font-family:'Playfair Display',serif;font-size:clamp(24px,4vw,40px);co
 .campus-stat .l{font-size:10px;opacity:.7;letter-spacing:1px;text-transform:uppercase}
 .campus-bar-wrap{height:6px;background:rgba(0,0,0,.15);border-radius:3px;margin:0 24px;overflow:hidden}
 .campus-bar{height:100%;background:rgba(255,255,255,.7);border-radius:3px;transition:width 1s ease}
+.over-goal-badge{background:rgba(255,255,255,0.9);color:#1A2B47;font-size:11px;font-weight:800;border-radius:20px;padding:4px 12px;letter-spacing:0.5px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.15)}
 .campus-overflow-notice{background:rgba(255,255,255,.85);border-top:1px solid rgba(0,0,0,.08);padding:10px 24px;font-size:12px;color:#1A2B47;font-weight:500;display:flex;align-items:center;gap:6px}
 
 /* Cards grid */
@@ -114,7 +115,8 @@ header h1{font-family:'Playfair Display',serif;font-size:clamp(24px,4vw,40px);co
 .camp-lv .campus-header{background:var(--coral)}
 .camp-wc .card-accent,.camp-wc .prog-fill,.camp-wc .avatar{background:var(--gold)!important}
 .camp-wc .campus-header{background:var(--gold)}
-.camp-wc .campus-name,.camp-wc .campus-badge,.camp-wc .campus-stat .v,.camp-wc .campus-stat .l,.camp-wc .campus-overflow-notice{color:var(--navy)!important}
+.camp-wc .campus-name,.camp-wc .campus-badge,.camp-wc .campus-stat .v,.camp-wc .campus-stat .l,.camp-wc .over-goal-badge{background:rgba(255,255,255,0.9);color:#1A2B47;font-size:11px;font-weight:800;border-radius:20px;padding:4px 12px;letter-spacing:0.5px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.15)}
+.campus-overflow-notice{color:var(--navy)!important}
 
 @media(max-width:640px){
   .controls,.campus-section,.staff-section{margin-left:16px;margin-right:16px}
@@ -297,7 +299,11 @@ function buildCampusSections(){
     const pctVal = Math.round(raised/goal*100);
     const cssKey = CAMPUS_CSS[key];
     const isDark = false;
-    const tc = isDark?'var(--navy)':'var(--white)';
+    const tc = (key==='walnutcreek') ? '#1A2B47' : 'var(--white)';
+    const personalRaised = PEOPLE.filter(p=>p.campus===key).reduce((s,p)=>
+      s+p.donors.filter(d=>d.source!=='Campus Overflow Distribution').reduce((a,d)=>a+d.amount,0),0);
+    const overGoal = personalRaised > goal;
+    const overAmt = personalRaised - goal;
     
     // Check if there's an overflow pool for this campus
     const OVERFLOW_NOTES = {"livermore": "Campus fund \u2014 variable distribution (max $941.66)", "sanramon": "Campus fund \u2014 $23.25 per student", "walnutcreek": "Campus fund \u2014 variable distribution (max $479.22) \u2014 includes overflow from Livermore"};
@@ -311,10 +317,12 @@ function buildCampusSections(){
           <div class="campus-name" style="color:${tc}">${info.label}</div>
         </div>
         <div class="campus-stats-row">
-          <div class="campus-stat" style="color:${tc}"><div class="v">${fmt(raised)}</div><div class="l">Raised</div></div>
+          <div class="campus-stat" style="color:${tc}"><div class="v">${fmt(personalRaised)}</div><div class="l">Actually Raised</div></div>
+          ${key==='walnutcreek'?`<div class="campus-stat" style="color:${tc}"><div class="v">${fmt(PEOPLE.filter(p=>p.campus===key&&!STAFF_IDS.has(p.id)).reduce((s,p)=>s+p.donors.filter(d=>d.source==='Campus Overflow Distribution'&&d.name.includes('Livermore')).reduce((a,d)=>a+d.amount,0),0))}</div><div class="l">From Livermore</div></div>`:''}
           <div class="campus-stat" style="color:${tc}"><div class="v">${fmt(goal)}</div><div class="l">Goal</div></div>
           <div class="campus-stat" style="color:${tc}"><div class="v">${funded}/${students.length}</div><div class="l">Funded</div></div>
           <div class="campus-stat" style="color:${tc}"><div class="v">${pctVal}%</div><div class="l">Complete</div></div>
+          ${overGoal?`<div class="over-goal-badge">🎉 ${fmt(overAmt)} over goal!</div>`:''}
         </div>
       </div>
       <div class="campus-bar-wrap" style="background:rgba(${isDark?'26,43,71':'0,0,0'},.15)"><div class="campus-bar" style="width:${pctVal}%"></div></div>
