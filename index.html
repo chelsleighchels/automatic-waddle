@@ -77,6 +77,7 @@ header h1{font-family:'Playfair Display',serif;font-size:clamp(24px,4vw,40px);co
 .amount-owed.zero{color:#48BB78;font-weight:600}
 .prog-track{height:6px;background:#E2E8F0;border-radius:3px;overflow:hidden;margin-bottom:10px}
 .prog-fill{height:100%;border-radius:3px;transition:width 1s ease}
+.personal-raised{font-size:11px;color:var(--text-light);margin-bottom:8px;font-style:italic}
 .donor-count{font-size:11px;color:var(--text-light)}
 .funded-badge{display:inline-flex;align-items:center;gap:4px;background:#C6F6D5;color:#276749;font-size:11px;font-weight:700;border-radius:20px;padding:3px 10px;margin-bottom:6px}
 .card-actions{display:flex;gap:8px;padding:10px 16px 14px}
@@ -650,17 +651,19 @@ function campusColor(c){return CAMPUS_INFO[c]?.color||'#38C4E7'}
 
 function buildSummary(){
   const students = PEOPLE.filter(p=>!STAFF_IDS.has(p.id));
-  const totalRaised = students.reduce((s,p)=>s+p.totalRaised,0);
   const totalGoal = students.length*GOAL;
   const funded = students.filter(p=>p.totalRaised>=GOAL).length;
+  // True total = every dollar donated (excluding campus fund redistribution entries and staff placeholders)
+  const trueTotal = PEOPLE.reduce((s,p)=>
+    s + p.donors.filter(d=>d.source!=='Campus Overflow Distribution' && d.name!=='Staff — Fully Covered')
+                 .reduce((a,d)=>a+d.amount,0), 0);
   const strip = document.getElementById('summaryStrip');
   strip.innerHTML = `
     <div class="sum-stat"><div class="val">${students.length}</div><div class="lbl">Students</div></div>
     <div class="sum-stat"><div class="val">3</div><div class="lbl">Campuses</div></div>
-    <div class="sum-stat"><div class="val">${fmt(totalRaised)}</div><div class="lbl">Total Raised</div></div>
-    <div class="sum-stat"><div class="val">${fmt(totalGoal-totalRaised)}</div><div class="lbl">Still Needed</div></div>
+    <div class="sum-stat"><div class="val">${fmt(trueTotal)} / ${fmt(totalGoal)}</div><div class="lbl">Total Raised</div></div>
     <div class="sum-stat"><div class="val">${funded}</div><div class="lbl">Fully Funded</div></div>
-    <div class="sum-stat"><div class="val">${Math.round(totalRaised/totalGoal*100)}%</div><div class="lbl">Overall</div></div>
+    <div class="sum-stat"><div class="val">${Math.round(trueTotal/totalGoal*100)}%</div><div class="lbl">Overall</div></div>
   `;
 }
 
@@ -697,6 +700,7 @@ function buildCard(p){
   const aColor = avatarColor(p.id);
   const pctVal = pct(p.totalRaised);
   const donors = p.donors.filter(d=>d.name!=='Staff — Fully Covered');
+  const personalRaisedAmt = p.donors.filter(d=>d.source!=='Campus Overflow Distribution' && d.name!=='Staff — Fully Covered').reduce((a,d)=>a+d.amount,0);
   return `<div class="card" data-id="${p.id}" data-campus="${p.campus}" data-name="${(p.firstName+' '+p.lastName).toLowerCase()}" data-status="${funded?'funded':'progress'}">
     <div class="card-accent" style="background:${color}"></div>
     <div class="card-body">
@@ -714,6 +718,7 @@ function buildCard(p){
           ${funded?'Goal Reached!':fmt(p.balanceOwed)+' still needed'}
         </div>
       </div>
+      <div class="personal-raised">🎯 Personally raised: ${fmt(personalRaisedAmt)}</div>
       <div class="prog-track"><div class="prog-fill" style="width:${pctVal}%;background:${color}"></div></div>
       <div class="donor-count">🫶 ${donors.length} donor${donors.length!==1?'s':''}</div>
     </div>
