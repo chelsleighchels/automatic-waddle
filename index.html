@@ -760,14 +760,29 @@ function buildCampusSections(){
     const isDark = false;
     const tc = (key==='walnutcreek') ? '#1A2B47' : 'var(--white)';
     const personalRaised = PEOPLE.filter(p=>p.campus===key).reduce((s,p)=>
-      s+p.donors.filter(d=>d.source!=='Campus Overflow Distribution').reduce((a,d)=>a+d.amount,0),0);
+      s+p.donors.filter(d=>d.source!=='Campus Overflow Distribution'&&d.name!=='Staff — Fully Covered').reduce((a,d)=>a+d.amount,0),0);
     const overGoal = personalRaised > goal;
     const overAmt = personalRaised - goal;
+    // Staff member for this campus
+    const staffMember = PEOPLE.find(p=>STAFF_IDS.has(p.id)&&p.campus===key);
+    const staffRaised = staffMember ? staffMember.donors.filter(d=>d.source!=='Campus Overflow Distribution'&&d.name!=='Staff — Fully Covered').reduce((a,d)=>a+d.amount,0) : 0;
+    const staffName = 'Campus Team Donations';
+    // Gross pool = student overflows + staff real + static
+    const studentOverflow = PEOPLE.filter(p=>p.campus===key&&!STAFF_IDS.has(p.id)).reduce((s,p)=>{
+      const raw = p.donors.filter(d=>d.source!=='Campus Overflow Distribution').reduce((a,d)=>a+d.amount,0);
+      return s + Math.max(0, raw - GOAL);
+    },0);
+    const STATIC = {livermore:1317,sanramon:100,walnutcreek:141.50};
+    const grossPool = studentOverflow + staffRaised + (STATIC[key]||0);
+    // Amount sent to other campuses
+    const sentToOthers = PEOPLE.filter(p=>p.campus!==key).reduce((s,p)=>
+      s+p.donors.filter(d=>d.source==='Campus Overflow Distribution'&&d.name.includes(key==='livermore'?'Livermore':key==='walnutcreek'?'Walnut Creek':'San Ramon')).reduce((a,d)=>a+d.amount,0),0);
+    // From Livermore overflow
+    const fromLvAmt = PEOPLE.filter(p=>p.campus===key&&!STAFF_IDS.has(p.id)).reduce((s,p)=>s+p.donors.filter(d=>d.source==='Campus Overflow Distribution'&&d.name.includes('Livermore')).reduce((a,d)=>a+d.amount,0),0);
     
     // Check if there's an overflow pool for this campus
     const OVERFLOW_NOTES = {"livermore": "Campus fund \u2014 variable distribution (max $891.66) \u2014 includes overflow from Livermore", "sanramon": "Campus fund \u2014 variable distribution (max $298.50) \u2014 includes overflow from Livermore", "walnutcreek": "Campus fund \u2014 variable distribution (max $586.60) \u2014 includes overflow from Livermore"};
-    const hasOverflow = !!OVERFLOW_NOTES[key];
-    const overflowNote = hasOverflow?`<div class="campus-overflow-notice">♻️ Campus overflow pool distributing ${fmt(138.59)} to each unfunded student</div>`:'';
+    const overflowNote = '';
     
     html += `<div class="campus-section ${cssKey}" id="campus-${key}">
       <div class="campus-header" style="background:${info.color}">
@@ -777,11 +792,13 @@ function buildCampusSections(){
         </div>
         <div class="campus-stats-row">
           <div class="campus-stat" style="color:${tc}"><div class="v">${fmt(personalRaised)}</div><div class="l">Campus Raised</div></div>
-          ${key==='walnutcreek'?`<div class="campus-stat" style="color:${tc}"><div class="v">${fmt(PEOPLE.filter(p=>p.campus===key&&!STAFF_IDS.has(p.id)).reduce((s,p)=>s+p.donors.filter(d=>d.source==='Campus Overflow Distribution'&&d.name.includes('Livermore')).reduce((a,d)=>a+d.amount,0),0))}</div><div class="l">From Livermore</div></div>`:''}
+          <div class="campus-stat" style="color:${tc}"><div class="v">${fmt(staffRaised)}</div><div class="l">${staffName}</div></div>
+          ${fromLvAmt>0?`<div class="campus-stat" style="color:${tc}"><div class="v">${fmt(fromLvAmt)}</div><div class="l">From Livermore</div></div>`:''}
           <div class="campus-stat" style="color:${tc}"><div class="v">${fmt(goal)}</div><div class="l">Goal</div></div>
           <div class="campus-stat" style="color:${tc}"><div class="v">${funded}/${students.length}</div><div class="l">Funded</div></div>
           <div class="campus-stat" style="color:${tc}"><div class="v">${pctVal}%</div><div class="l">Complete</div></div>
-          ${overGoal?`<div class="over-goal-badge">🎉 ${fmt(overAmt)} over goal!</div>`:''}
+
+          ${sentToOthers>0?`<div class="campus-stat" style="color:${tc}"><div class="v">${fmt(sentToOthers)}</div><div class="l">↗ Sent to Others</div></div>`:''}
         </div>
       </div>
       <div class="campus-bar-wrap" style="background:rgba(${isDark?'26,43,71':'0,0,0'},.15)"><div class="campus-bar" style="width:${pctVal}%"></div></div>
