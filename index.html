@@ -330,40 +330,64 @@ function wofReset(){wofGuessed[wofIdx]=new Set();wofRevealed[wofIdx]=false;rende
 function toggleTip(){const t=document.getElementById('wof-tip');t.textContent=wofPhrases[wofIdx].tip;t.classList.toggle('show');}
 
 const pirData=[
-  {name:"Higher or Lower",how:"Show both items on screen. First rep to shout the more expensive item wins the point. Run all 5 rounds rapid fire. Prices sourced from Target Livermore (94551) today.",items:[
+  {name:"Higher or Lower",how:"Products shown side by side. First rep to shout the more expensive item wins the point. Run all 5 rounds rapid fire. Prices from Target Livermore (94551).",items:[
     {
-      a:"Takis Fuego 17oz",aImg:"https://target.scene7.com/is/image/Target/GUEST_a05216b4-962a-4d23-871e-90ac713e8c1b?wid=300&hei=300&fmt=pjpeg",aPrice:"$5.59",
-      b:"Flamin' Hot Cheetos 8.5oz",bImg:"https://target.scene7.com/is/image/Target/GUEST_311c1828-5acd-46d3-82cd-a979f95f5607?wid=300&hei=300&fmt=pjpeg",bPrice:"$4.79",
-      ans:"🌶️ Takis Fuego wins! $5.59 vs $4.79"
+      a:"Takis Fuego 17oz",
+      aImg:"https://wsrv.nl/?url=target.scene7.com/is/image/Target/GUEST_a05216b4-962a-4d23-871e-90ac713e8c1b%3Fwid%3D300%26hei%3D300",
+      aPrice:"$9.99",
+      b:"Flamin' Hot Cheetos 8.5oz",
+      bImg:"https://wsrv.nl/?url=target.scene7.com/is/image/Target/GUEST_311c1828-5acd-46d3-82cd-a979f95f5607%3Fwid%3D300%26hei%3D300",
+      bPrice:"$5.99",
+      ans:"🌶️ Takis Fuego wins! $9.99 vs $5.99"
     },
     {
-      a:"Apple AirPods (4th gen)",aImg:"https://target.scene7.com/is/image/Target/GUEST_3b5a8374-fa6b-4e94-8498-7ec77de08ced?wid=300&hei=300&fmt=pjpeg",aPrice:"$129.00",
-      b:"Beats Solo 4 Headphones",bImg:"https://target.scene7.com/is/image/Target/GUEST_ab3e4a33-8285-4e58-b21e-89ef01e9e36c?wid=300&hei=300&fmt=pjpeg",bPrice:"$199.99",
+      a:"Apple AirPods (4th Gen)",
+      aImg:"https://wsrv.nl/?url=target.scene7.com/is/image/Target/GUEST_3b5a8374-fa6b-4e94-8498-7ec77de08ced%3Fwid%3D300%26hei%3D300",
+      aPrice:"$129.00",
+      b:"Beats Solo 4 Headphones",
+      bImg:"https://wsrv.nl/?url=target.scene7.com/is/image/Target/GUEST_ab3e4a33-8285-4e58-b21e-89ef01e9e36c%3Fwid%3D300%26hei%3D300",
+      bPrice:"$199.99",
       ans:"🎧 Beats Solo 4 wins! $199.99 vs $129.00"
     },
     {
-      a:"Starbucks Frappuccino 13.7oz bottle",aImg:"https://target.scene7.com/is/image/Target/GUEST_e9ca5c82-8fbd-4547-9ea7-28c9c9a7c21b?wid=300&hei=300&fmt=pjpeg",aPrice:"$4.49",
-      b:"Red Bull Energy Drink 12oz",bImg:"https://target.scene7.com/is/image/Target/GUEST_0b6e05c9-5ef2-4b1a-b78e-a18bfa5440af?wid=300&hei=300&fmt=pjpeg",bPrice:"$3.19",
-      ans:"☕ Starbucks Frappuccino wins! $4.49 vs $3.19"
+      a:"Starbucks Frappuccino 13.7oz",
+      aImg:"https://wsrv.nl/?url=target.scene7.com/is/image/Target/GUEST_e9ca5c82-8fbd-4547-9ea7-28c9c9a7c21b%3Fwid%3D300%26hei%3D300",
+      aPrice:"$4.49",
+      b:"Red Bull Energy 12oz",
+      bImg:"https://wsrv.nl/?url=target.scene7.com/is/image/Target/GUEST_0b6e05c9-5ef2-4b1a-b78e-a18bfa5440af%3Fwid%3D300%26hei%3D300",
+      bPrice:"$3.19",
+      ans:"☕ Starbucks wins! $4.49 vs $3.19"
     },
     {
-      a:"NIV Study Bible (Zondervan)",aImg:"https://target.scene7.com/is/image/Target/GUEST_5b29c67b-8d32-4b69-9e03-e06feef4eb6b?wid=300&hei=300&fmt=pjpeg",aPrice:"$44.99",
-      b:"Good & Gather Sparkling Water 12pk",bImg:"https://target.scene7.com/is/image/Target/GUEST_a3b1f07f-0af1-4caf-9e77-43d12b91eab6?wid=300&hei=300&fmt=pjpeg",bPrice:"$5.29",
+      a:"NIV Study Bible (Zondervan)",
+      aImg:"https://wsrv.nl/?url=target.scene7.com/is/image/Target/GUEST_5b29c67b-8d32-4b69-9e03-e06feef4eb6b%3Fwid%3D300%26hei%3D300",
+      aPrice:"$44.99",
+      b:"Good & Gather Sparkling Water 12pk",
+      bImg:"https://wsrv.nl/?url=target.scene7.com/is/image/Target/GUEST_a3b1f07f-0af1-4caf-9e77-43d12b91eab6%3Fwid%3D300%26hei%3D300",
+      bPrice:"$5.29",
       ans:"📖 Study Bible wins by a mile! $44.99 vs $5.29"
     },
     {
-      a:"Oreo Cookies 13.29oz Family Size",aImg:"https://target.scene7.com/is/image/Target/GUEST_3b1f5c35-84d2-4ecb-86ca-f12b6e2d7da7?wid=300&hei=300&fmt=pjpeg",aPrice:"$5.39",
-      b:"Pringles Original 5.5oz",bImg:"https://target.scene7.com/is/image/Target/GUEST_e1d0c4ae-2ee4-44c7-a6e4-56e4f76c8d1a?wid=300&hei=300&fmt=pjpeg",bPrice:"$2.49",
+      a:"Oreo Family Size 18.12oz",
+      aImg:"https://wsrv.nl/?url=target.scene7.com/is/image/Target/GUEST_3b1f5c35-84d2-4ecb-86ca-f12b6e2d7da7%3Fwid%3D300%26hei%3D300",
+      aPrice:"$5.39",
+      b:"Pringles Original 5.5oz",
+      bImg:"https://wsrv.nl/?url=target.scene7.com/is/image/Target/GUEST_e1d0c4ae-2ee4-44c7-a6e4-56e4f76c8d1a%3Fwid%3D300%26hei%3D300",
+      bPrice:"$2.49",
       ans:"🍪 Oreos win! $5.39 vs $2.49"
     },
   ]},
-  {name:"Grocery Game",how:"Show 5 real items from a grocery bag. Teams write their guess for the total price. Closest without going over wins.",items:[
-    {a:"Bag of chips",ans:""},{a:"A soda",ans:""},{a:"A granola bar",ans:""},{a:"A bag of candy",ans:""},{a:"A small juice",ans:"Reveal the real total from your receipt — announce it dramatically!"},
+  {name:"Grocery Game",how:"Show these 5 items one at a time. Teams write down what they think the total of ALL 5 items costs. Closest without going over wins 200 pts!",items:[
+    {a:"Cherry Ring Pop (single)",aPrice:"$1.50",ans:""},
+    {a:"Burga Magnetic Power Bank",aPrice:"$99.00",ans:""},
+    {a:"Derpy Tiger Squishmallow",aPrice:"$20.00",ans:""},
+    {a:"Original Tonie Box Starter Set",aPrice:"$79.99",ans:""},
+    {a:"Camp Snap 8 Camera",aPrice:"$199.00",ans:"Total = $399.49 — announce it dramatically!"},
   ]},
-  {name:"Exact Price Challenge",how:"Show one mystery item at a time. All reps write their guess on a whiteboard and flip at the same time. Closest wins.",items:[
+  {name:"Exact Price Challenge",how:"Show one mystery item at a time. All reps write their guess on a whiteboard and flip at the same time. Closest wins 200 pts.",items:[
     {a:"Pack of 10 pencils (Target brand)",ans:"~$1.50–2.00"},{a:"Costco-size bag of Goldfish crackers",ans:"~$8–10"},{a:"32 oz Hydro Flask water bottle",ans:"~$44.95"},{a:"1 month of Netflix Standard plan",ans:"~$15.49/mo"},{a:"Teen study Bible (standard edition)",ans:"~$19.99"},
   ]},
-];
+]
 function buildPir(){
   const body=document.getElementById('pir-body');body.innerHTML='';
   pirData.forEach((game,gi)=>{
@@ -428,21 +452,41 @@ function buildPir(){
         sec.appendChild(card);
 
       }else{
-        const row=document.createElement('div');row.style.cssText='margin-bottom:10px';
-        const itemWrap=document.createElement('div');itemWrap.className='price-row';
-        const itemDiv=document.createElement('div');itemDiv.className='price-item';itemDiv.style.flex='2';
+        const isGrocery=game.name==='Grocery Game';
+        const row=document.createElement('div');row.style.cssText='border:1px solid rgba(0,0,0,0.08);border-radius:10px;padding:12px 14px;margin-bottom:10px;background:#fafafa;display:flex;align-items:center;justify-content:space-between;gap:12px';
+        const left=document.createElement('div');
         const lbl=document.createElement('div');lbl.className='price-item-label';lbl.textContent='Item '+(ii+1);
-        const val=document.createElement('div');val.className='price-item-val';val.textContent=item.a;
-        itemDiv.appendChild(lbl);itemDiv.appendChild(val);itemWrap.appendChild(itemDiv);
-        row.appendChild(itemWrap);
-        if(item.ans){
-          const ansDiv=document.createElement('div');ansDiv.className='price-answer';ansDiv.textContent=item.ans;
-          const btn=document.createElement('button');btn.className='price-ans-btn';btn.textContent='Reveal answer';
+        const val=document.createElement('div');val.className='price-item-val';val.style.fontSize='15px';val.textContent=item.a;
+        left.appendChild(lbl);left.appendChild(val);row.appendChild(left);
+        if(isGrocery){
+          const priceDiv=document.createElement('div');
+          priceDiv.style.cssText='font-family:"Bebas Neue",sans-serif;font-size:26px;letter-spacing:1px;color:#F4841F;display:none;white-space:nowrap';
+          priceDiv.textContent=item.aPrice;
+          const btn=document.createElement('button');btn.className='price-ans-btn';btn.textContent='Reveal price';
+          btn.style.cssText='white-space:nowrap;flex-shrink:0';
           btn.addEventListener('click',function(){
-            ansDiv.classList.toggle('show');
-            this.textContent=ansDiv.classList.contains('show')?'Hide answer':'Reveal answer';
+            priceDiv.style.display='block';this.style.display='none';
           });
-          row.appendChild(btn);row.appendChild(ansDiv);
+          row.appendChild(btn);row.appendChild(priceDiv);
+          if(item.ans){
+            const noteDiv=document.createElement('div');
+            noteDiv.style.cssText='margin-top:8px;font-size:12px;color:#085041;background:#E8F9F8;border-radius:6px;padding:6px 10px;border-left:3px solid #3ABFB1';
+            noteDiv.textContent=item.ans;
+            const wrapper=document.createElement('div');wrapper.appendChild(row);wrapper.appendChild(noteDiv);
+            sec.appendChild(wrapper);return;
+          }
+        }else{
+          if(item.ans){
+            const ansDiv=document.createElement('div');ansDiv.className='price-answer';ansDiv.textContent=item.ans;
+            const btn=document.createElement('button');btn.className='price-ans-btn';btn.textContent='Reveal answer';btn.style.cssText='white-space:nowrap;flex-shrink:0';
+            btn.addEventListener('click',function(){
+              ansDiv.classList.toggle('show');
+              this.textContent=ansDiv.classList.contains('show')?'Hide':'Reveal answer';
+            });
+            row.appendChild(btn);
+            const wrapper=document.createElement('div');wrapper.appendChild(row);wrapper.appendChild(ansDiv);
+            sec.appendChild(wrapper);return;
+          }
         }
         sec.appendChild(row);
       }
