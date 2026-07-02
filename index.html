@@ -330,37 +330,129 @@ function wofReset(){wofGuessed[wofIdx]=new Set();wofRevealed[wofIdx]=false;rende
 function toggleTip(){const t=document.getElementById('wof-tip');t.textContent=wofPhrases[wofIdx].tip;t.classList.toggle('show');}
 
 const pirData=[
-  {name:"Higher or Lower",how:"Show two items. First rep to shout the more expensive item wins the point. Run all 5 rounds rapid fire.",items:[
-    {a:"Takis (bag)",b:"Flamin' Hot Cheetos (bag)",ans:"Check local store prices the day of!"},
-    {a:"AirPods (standard)",b:"Beats Solo headphones",ans:"Beats Solos (~99)"},
-    {a:"Starbucks Grande Latte",b:"Chick-fil-A combo meal",ans:"Comparable — check local prices first"},
-    {a:"A standard Bible",b:"A journal from Target",ans:"Bible usually wins (~5–25)"},
-    {a:"A gas station Slurpee",b:"A movie ticket",ans:"Movie ticket (~5–20)"},
+  {name:"Higher or Lower",how:"Show both items on screen. First rep to shout the more expensive item wins the point. Run all 5 rounds rapid fire. Prices sourced from Target Livermore (94551) today.",items:[
+    {
+      a:"Takis Fuego 17oz",aImg:"https://target.scene7.com/is/image/Target/GUEST_a05216b4-962a-4d23-871e-90ac713e8c1b?wid=300&hei=300&fmt=pjpeg",aPrice:"$5.59",
+      b:"Flamin' Hot Cheetos 8.5oz",bImg:"https://target.scene7.com/is/image/Target/GUEST_311c1828-5acd-46d3-82cd-a979f95f5607?wid=300&hei=300&fmt=pjpeg",bPrice:"$4.79",
+      ans:"🌶️ Takis Fuego wins! $5.59 vs $4.79"
+    },
+    {
+      a:"Apple AirPods (4th gen)",aImg:"https://target.scene7.com/is/image/Target/GUEST_3b5a8374-fa6b-4e94-8498-7ec77de08ced?wid=300&hei=300&fmt=pjpeg",aPrice:"$129.00",
+      b:"Beats Solo 4 Headphones",bImg:"https://target.scene7.com/is/image/Target/GUEST_ab3e4a33-8285-4e58-b21e-89ef01e9e36c?wid=300&hei=300&fmt=pjpeg",bPrice:"$199.99",
+      ans:"🎧 Beats Solo 4 wins! $199.99 vs $129.00"
+    },
+    {
+      a:"Starbucks Frappuccino 13.7oz bottle",aImg:"https://target.scene7.com/is/image/Target/GUEST_e9ca5c82-8fbd-4547-9ea7-28c9c9a7c21b?wid=300&hei=300&fmt=pjpeg",aPrice:"$4.49",
+      b:"Red Bull Energy Drink 12oz",bImg:"https://target.scene7.com/is/image/Target/GUEST_0b6e05c9-5ef2-4b1a-b78e-a18bfa5440af?wid=300&hei=300&fmt=pjpeg",bPrice:"$3.19",
+      ans:"☕ Starbucks Frappuccino wins! $4.49 vs $3.19"
+    },
+    {
+      a:"NIV Study Bible (Zondervan)",aImg:"https://target.scene7.com/is/image/Target/GUEST_5b29c67b-8d32-4b69-9e03-e06feef4eb6b?wid=300&hei=300&fmt=pjpeg",aPrice:"$44.99",
+      b:"Good & Gather Sparkling Water 12pk",bImg:"https://target.scene7.com/is/image/Target/GUEST_a3b1f07f-0af1-4caf-9e77-43d12b91eab6?wid=300&hei=300&fmt=pjpeg",bPrice:"$5.29",
+      ans:"📖 Study Bible wins by a mile! $44.99 vs $5.29"
+    },
+    {
+      a:"Oreo Cookies 13.29oz Family Size",aImg:"https://target.scene7.com/is/image/Target/GUEST_3b1f5c35-84d2-4ecb-86ca-f12b6e2d7da7?wid=300&hei=300&fmt=pjpeg",aPrice:"$5.39",
+      b:"Pringles Original 5.5oz",bImg:"https://target.scene7.com/is/image/Target/GUEST_e1d0c4ae-2ee4-44c7-a6e4-56e4f76c8d1a?wid=300&hei=300&fmt=pjpeg",bPrice:"$2.49",
+      ans:"🍪 Oreos win! $5.39 vs $2.49"
+    },
   ]},
   {name:"Grocery Game",how:"Show 5 real items from a grocery bag. Teams write their guess for the total price. Closest without going over wins.",items:[
     {a:"Bag of chips",ans:""},{a:"A soda",ans:""},{a:"A granola bar",ans:""},{a:"A bag of candy",ans:""},{a:"A small juice",ans:"Reveal the real total from your receipt — announce it dramatically!"},
   ]},
   {name:"Exact Price Challenge",how:"Show one mystery item at a time. All reps write their guess on a whiteboard and flip at the same time. Closest wins.",items:[
-    {a:"Pack of 10 pencils (Target brand)",ans:"~.50–2.00"},{a:"Costco-size bag of Goldfish crackers",ans:"~–10"},{a:"32 oz Hydro Flask water bottle",ans:"~4.95"},{a:"1 month of Netflix Standard plan",ans:"~5.49/mo"},{a:"Teen study Bible (standard edition)",ans:"~9.99"},
+    {a:"Pack of 10 pencils (Target brand)",ans:"~$1.50–2.00"},{a:"Costco-size bag of Goldfish crackers",ans:"~$8–10"},{a:"32 oz Hydro Flask water bottle",ans:"~$44.95"},{a:"1 month of Netflix Standard plan",ans:"~$15.49/mo"},{a:"Teen study Bible (standard edition)",ans:"~$19.99"},
   ]},
 ];
 function buildPir(){
   const body=document.getElementById('pir-body');body.innerHTML='';
   pirData.forEach((game,gi)=>{
     const sec=document.createElement('div');sec.className='psec'+(gi===0?' active':'');sec.id='ps'+gi;
-    let html='<div class="price-how">'+game.how+'</div>';
+    const howDiv=document.createElement('div');howDiv.className='price-how';howDiv.textContent=game.how;
+    sec.appendChild(howDiv);
+
     game.items.forEach((item,ii)=>{
       if(game.name==='Higher or Lower'){
-        html+='<div class="price-row"><div class="price-item"><div class="price-item-label">Item A</div><div class="price-item-val">'+item.a+'</div></div><div style="display:flex;align-items:center;color:#999;font-size:16px;padding:0 4px">vs</div><div class="price-item"><div class="price-item-label">Item B</div><div class="price-item-val">'+item.b+'</div></div></div><div style="margin-bottom:13px"><button class="price-ans-btn" onclick="toggleAns(this,\'pa'+gi+ii+'\')">Reveal answer</button><div class="price-answer" id="pa'+gi+ii+'">'+item.ans+'</div></div>';
+        const card=document.createElement('div');
+        card.style.cssText='border:1px solid rgba(0,0,0,0.1);border-radius:14px;padding:16px;margin-bottom:14px;background:#fafafa';
+
+        const grid=document.createElement('div');
+        grid.style.cssText='display:grid;grid-template-columns:1fr 36px 1fr;gap:8px;align-items:start;margin-bottom:14px';
+
+        function makeItem(name,imgUrl,price,slot){
+          const wrap=document.createElement('div');
+          wrap.style.cssText='display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center';
+          const imgWrap=document.createElement('div');
+          imgWrap.style.cssText='width:120px;height:120px;border-radius:10px;background:#fff;border:1px solid rgba(0,0,0,0.08);display:flex;align-items:center;justify-content:center;overflow:hidden;margin:0 auto';
+          const img=document.createElement('img');
+          img.src=imgUrl;img.alt=name;img.style.cssText='width:108px;height:108px;object-fit:contain';
+          img.onerror=function(){this.parentElement.style.background='#eee';this.style.display='none';};
+          imgWrap.appendChild(img);
+          const label=document.createElement('div');
+          label.style.cssText='font-family:"Russo One",sans-serif;font-size:10px;letter-spacing:.5px;color:#999;text-transform:uppercase';
+          label.textContent='Item '+slot;
+          const nameDiv=document.createElement('div');
+          nameDiv.style.cssText='font-size:14px;font-weight:700;color:#1a1a2e;line-height:1.3';
+          nameDiv.textContent=name;
+          const priceDiv=document.createElement('div');
+          priceDiv.style.cssText='display:none;font-family:"Bebas Neue",sans-serif;font-size:28px;letter-spacing:1px;color:#F4841F';
+          priceDiv.textContent=price;
+          const btn=document.createElement('button');
+          btn.className='price-ans-btn';btn.textContent='Tap for price';
+          btn.addEventListener('click',function(){priceDiv.style.display='block';this.style.display='none';});
+          wrap.appendChild(imgWrap);wrap.appendChild(label);wrap.appendChild(nameDiv);wrap.appendChild(priceDiv);wrap.appendChild(btn);
+          return wrap;
+        }
+
+        grid.appendChild(makeItem(item.a,item.aImg,item.aPrice,'A'));
+        const vs=document.createElement('div');
+        vs.style.cssText='display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#ccc;padding-top:56px';
+        vs.textContent='vs';
+        grid.appendChild(vs);
+        grid.appendChild(makeItem(item.b,item.bImg,item.bPrice,'B'));
+        card.appendChild(grid);
+
+        const footer=document.createElement('div');
+        footer.style.cssText='text-align:center;border-top:1px solid rgba(0,0,0,0.06);padding-top:12px';
+        const ansDiv=document.createElement('div');
+        ansDiv.className='price-answer';ansDiv.textContent=item.ans;
+        const winBtn=document.createElement('button');
+        winBtn.className='price-ans-btn';winBtn.style.cssText='border-color:#3ABFB1;color:#085041';
+        winBtn.textContent='🏆 Reveal winner';
+        winBtn.addEventListener('click',function(){
+          ansDiv.classList.toggle('show');
+          this.textContent=ansDiv.classList.contains('show')?'Hide':'🏆 Reveal winner';
+        });
+        footer.appendChild(winBtn);footer.appendChild(ansDiv);
+        card.appendChild(footer);
+        sec.appendChild(card);
+
       }else{
-        html+='<div class="price-row"><div class="price-item" style="flex:2"><div class="price-item-label">Item '+(ii+1)+'</div><div class="price-item-val">'+item.a+'</div></div>'+(item.ans?'<button class="price-ans-btn" onclick="toggleAns(this,\'pa'+gi+ii+'\')">Reveal answer</button>':'')+'</div>'+(item.ans?'<div class="price-answer" id="pa'+gi+ii+'">'+item.ans+'</div>':'');
+        const row=document.createElement('div');row.style.cssText='margin-bottom:10px';
+        const itemWrap=document.createElement('div');itemWrap.className='price-row';
+        const itemDiv=document.createElement('div');itemDiv.className='price-item';itemDiv.style.flex='2';
+        const lbl=document.createElement('div');lbl.className='price-item-label';lbl.textContent='Item '+(ii+1);
+        const val=document.createElement('div');val.className='price-item-val';val.textContent=item.a;
+        itemDiv.appendChild(lbl);itemDiv.appendChild(val);itemWrap.appendChild(itemDiv);
+        row.appendChild(itemWrap);
+        if(item.ans){
+          const ansDiv=document.createElement('div');ansDiv.className='price-answer';ansDiv.textContent=item.ans;
+          const btn=document.createElement('button');btn.className='price-ans-btn';btn.textContent='Reveal answer';
+          btn.addEventListener('click',function(){
+            ansDiv.classList.toggle('show');
+            this.textContent=ansDiv.classList.contains('show')?'Hide answer':'Reveal answer';
+          });
+          row.appendChild(btn);row.appendChild(ansDiv);
+        }
+        sec.appendChild(row);
       }
     });
-    sec.innerHTML=html;body.appendChild(sec);
+    body.appendChild(sec);
   });
 }
+
 function showPTab(i,btn){document.querySelectorAll('.price-tab').forEach((t,ti)=>t.classList.toggle('active',ti===i));document.querySelectorAll('.psec').forEach((s,si)=>s.classList.toggle('active',si===i));}
-function toggleAns(btn,id){const el=document.getElementById(id);el.classList.toggle('show');btn.textContent=el.classList.contains('show')?'Hide answer':'Reveal answer';}
+function toggleAns(btn,id){const el=document.getElementById(id);el.classList.toggle('show');btn.textContent=el.classList.contains('show')?'Hide':'🏆 Reveal winner';}
 
 const m2wData=[
   {name:"Oreo Face",color:"#F4841F",bg:"#FEF0E4",supplies:"1 Oreo per player (bring extras!)",setup:"Players tilt head back and place Oreo on their forehead.",goal:"Move the Oreo from forehead to mouth using ONLY face muscles. No hands. First to eat it wins.",tip:"Eyebrow raises and forehead scrunches are the move. Demo this yourself first!"},
